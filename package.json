@@ -1,0 +1,34 @@
+{
+  "name": "cropiot-mqtt-gateway",
+  "version": "0.0.1",
+  "description": "CropIoT MQTT Gateway",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run migrate && npm run pm2",
+    "migrate": "node ./node_modules/.bin/sequelize db:migrate",
+    "migrate:generate": "node ./node_modules/.bin/sequelize migration:generate --name",
+    "pm2": "node ./node_modules/pm2/bin/pm2-runtime ecosystem.config.js",
+    "pm2:logs": "node ./node_modules/pm2/bin/pm2 logs",
+    "ssh": "docker exec -u root -it cropiot-mqtt-gateway sh"
+  },
+  "repository": "https://github.com/rrgarciach/cropiot-mqtt-gateway",
+  "author": "rrgarciach",
+  "license": "ISC",
+  "dependencies": {
+    "aedes": "^0.42.4",
+    "lodash": "^4.17.15",
+    "module-alias": "^2.2.2",
+    "mqtt": "^4.1.0",
+    "pm2": "^4.4.0",
+    "sequelize": "^5",
+    "sequelize-cli": "^5",
+    "sqlite": "^4.0.11",
+    "sqlite3": "^5.0.0"
+  },
+  "_moduleAliases": {
+    "@": ".",
+    "@src": "./src",
+    "@models": "./src/db/models"
+  }
+}

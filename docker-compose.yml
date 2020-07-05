@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+
+  cropiot-mqtt-gateway:
+    container_name: cropiot-mqtt-gateway
+    restart: on-failure
+    build: .
+    command: yarn start
+#    env_file: .env
+    volumes:
+      - .:/home/node/app/
+      - /home/node/app/node_modules/
+    ports:
+      - 1883:1883
+    environment:
+      NODE_ENV: development
+      PORT: 1883
+      SQLITE_DB: cropiot-mqtt-gateway_db

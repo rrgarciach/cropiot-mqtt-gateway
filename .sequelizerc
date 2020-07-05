@@ -1,0 +1,8 @@
+const path = require('path');
+
+require('module-alias/register');
+
+module.exports = {
+  'config': path.resolve('src', 'config', 'sequelize/config.js'),
+  'migrations-path': path.resolve('src', 'db', 'migrations'),
+}
