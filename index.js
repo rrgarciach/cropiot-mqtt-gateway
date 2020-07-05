@@ -5,7 +5,7 @@ const aedes = require('aedes');
 const models = require('@models');
 
 const PORT = 1883;
-let clients = new Map();
+let mainClientsMap = new Map();
 
 const proxyBroker = new aedes.Server();
 const server = require('net').createServer(proxyBroker.handle);
@@ -53,10 +53,11 @@ function saveData(packet, client) {
 }
 
 function pushMessage(username, topic, message) {
+  if (!username) return Promise.error(`No username given. topic: ${topic} message: ${message}`);
   const protocol = process.env.MAIN_BROKER_PROTOCOL || 'mqtt';
   const host = process.env.MAIN_BROKER_HOST || 'demo.thingsboard.io';
   const port = process.env.MAIN_BROKER_PORT || 1883;
-  if (!clients.has(username)) {
+  if (!mainClientsMap.has(username)) {
     const mainClient = mqtt.connect({
       protocol,
       host,
@@ -69,9 +70,9 @@ function pushMessage(username, topic, message) {
     mainClient.on('close', () => {
       console.log(`Client ${username} disconnected from main broker ${host}`);
     });
-    clients.set(username, mainClient);
+    mainClientsMap.set(username, mainClient);
   }
   console.log(`Pushing message on behalf of ${username} message ${message} on topic ${topic} to  main broker ${host}`);
-  clients.get(username).publish(topic, message);
+  mainClientsMap.get(username).publish(topic, message);
   return Promise.resolve();
 }
