@@ -41,8 +41,10 @@ function saveDate(packet, client) {
   const username = _get(client, 'username', null);
   const topic = _get(packet, 'topic');
   const message = _get(packet, 'payload').toString();
-  return models.Telemetry.create({data: message})
-    .then(() => pushMessage(username, topic, message))
+  return Promise.all([
+    models.Telemetry.create({data: message}),
+    pushMessage(username, topic, message),
+  ])
     .catch(error => {
       console.error(error);
       return Promise.resolve();
@@ -60,9 +62,6 @@ function pushMessage(username, topic, message) {
     console.log(`connected to main broker`);
     console.log(`Pushing message on behalf of ${username} message ${message} on topic ${topic}`);
     mainClient.publish(topic, message);
+    return Promise.resolve();
   });
-  mainClient.on('publish', e => {
-    console.log(`published to main broker`);
-  });
-  return Promise.resolve();
 }
