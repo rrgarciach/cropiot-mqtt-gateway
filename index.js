@@ -42,6 +42,10 @@ function saveData(packet, client) {
   const username = _get(client, 'username', null);
   const topic = _get(packet, 'topic');
   const message = _get(packet, 'payload').toString();
+  if (!username) {
+    console.log(`No username given. Topic: ${topic} Message: ${message}`);
+    return;
+  }
   return Promise.all([
     models.Telemetry.create({data: message}),
     pushMessage(username, topic, message),
@@ -53,7 +57,6 @@ function saveData(packet, client) {
 }
 
 function pushMessage(username, topic, message) {
-  if (!username) return Promise.reject(`No username given. topic: ${topic} message: ${message}`);
   const protocol = process.env.MAIN_BROKER_PROTOCOL || 'mqtt';
   const host = process.env.MAIN_BROKER_HOST || 'demo.thingsboard.io';
   const port = process.env.MAIN_BROKER_PORT || 1883;
