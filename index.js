@@ -53,7 +53,7 @@ function saveData(packet, client) {
 }
 
 function pushMessage(username, topic, message) {
-  if (!username) return Promise.error(`No username given. topic: ${topic} message: ${message}`);
+  if (!username) return Promise.reject(`No username given. topic: ${topic} message: ${message}`);
   const protocol = process.env.MAIN_BROKER_PROTOCOL || 'mqtt';
   const host = process.env.MAIN_BROKER_HOST || 'demo.thingsboard.io';
   const port = process.env.MAIN_BROKER_PORT || 1883;
