@@ -17,11 +17,20 @@ proxyBroker.on('publish', async function (packet, client) {
 });
 
 proxyBroker.on('closed', () => {
-  console.log('closed')
+  console.error('Proxy Broker closed');
+  process.exit(1);
 });
 
 proxyBroker.on('client', client => {
-  console.log(`client: ${client.id} connected`)
+  console.log(`client: ${client.id} connected`);
+});
+
+proxyBroker.on('clientDisconnect', client => {
+  console.log(`client: ${client.id} disconnected`);
+  if (_get(client, 'username', false)) {
+    client.close();
+    mainClientsMap.delete(client.username);
+  }
 });
 
 proxyBroker.authenticate = function (client, username, password, callback) {
@@ -46,14 +55,12 @@ function saveData(packet, client) {
     console.log(`No username given. Topic: ${topic} Message: ${message}`);
     return;
   }
-  return Promise.all([
-    models.Telemetry.create({data: message}),
-    pushMessage(username, topic, message),
-  ])
+  return models.Telemetry.create({data: message})
     .catch(error => {
       console.error(error);
       return Promise.resolve();
-    });
+    })
+    .finally(() => pushMessage(username, topic, message));
 }
 
 function pushMessage(username, topic, message) {
