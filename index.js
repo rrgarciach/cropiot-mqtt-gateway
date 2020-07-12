@@ -79,6 +79,8 @@ function pushMessage(username, topic, message) {
     });
     mainClient.on('close', () => {
       console.log(`Client ${username} disconnected from main broker ${host}`);
+      mainClient.end();
+      mainClientsMap.delete(username);
     });
     mainClientsMap.set(username, mainClient);
   }
